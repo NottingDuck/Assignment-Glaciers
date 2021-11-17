@@ -4,3 +4,5 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     Latitude and longitude for each point are given in degrees.
     """
     raise NotImplementedError
+
+    # The edit is to check if the file is linked to github.
