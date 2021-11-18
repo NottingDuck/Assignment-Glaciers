@@ -16,18 +16,18 @@ class Glacier:
 
         self.unit = unit
 
-
-        # Location
-
         self.lat = lat
 
         self.lon = lon
 
         self.code = code
 
-    def add_mass_balance_measurement(self, year, mass_balance, boolean_value):
+        self.mass_balance_measurement = []
+
+    def add_mass_balance_measurement(self, year, mass_balance, partial_value):
         # a boolean value indicating whether this is a partial (sub-region) measurement or not
-        
+
+
         raise NotImplementedError
 
 
@@ -50,7 +50,7 @@ class GlacierCollection:
         header = []
         header = next(csv_reader) 
 
-        self.my_glacier = []
+        self.glacier_dataset = []
 
         for row in csv_reader:
             # row = [glacier_id, name, unit, lat, lon, code]
@@ -62,13 +62,30 @@ class GlacierCollection:
             code = int(row[7]+row[8]+row[9])
 
             # Store the data in my_glacier
-            self.my_glacier.append(Glacier(glacier_id, name, unit, lat, lon, code))
+            my_glacier = Glacier(glacier_id, name, unit, lat, lon, code)
+            self.glacier_dataset.append(my_glacier)
 
         file.close()
     
     def read_mass_balance_data(self, file_path):
-        
-        raise NotImplementedError
+
+
+        # Read the dataset of the year and mass_balance
+        file = open(file_path)
+        csv_reader = csv.reader(file)
+
+        # the first line is the header
+        header = []
+        header = next(csv_reader) 
+
+        for row in csv_reader:
+            year = row[3]
+            mass_balance = row[11]
+
+            # store the data in mass_balance_measurement
+            Glacier.mass_balance_measurement.append(year, mass_balance)
+
+        file.close()
 
     def find_nearest(self, lat, lon, n):
 
@@ -104,8 +121,14 @@ class GlacierCollection:
 file_path_A = Path("./sheet-A.csv")
 collection = GlacierCollection(file_path_A)
 
-# To test the output 
-for item in collection.my_glacier:
+# To test the output A
+for item in collection.glacier_dataset:
     print(item.name)
     
-print(collection.my_glacier[100].code)
+print(collection.glacier_dataset[100].code)
+
+# Import the csv file, sheet EE
+file_path_EE = Path("./sheet-EE.csv")
+
+
+
