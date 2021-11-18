@@ -22,11 +22,12 @@ class Glacier:
 
         self.code = code
 
+        # To store the year, mass_balance, partial_value
         self.mass_balance_measurement = []
 
     def add_mass_balance_measurement(self, year, mass_balance, partial_value):
         # a boolean value indicating whether this is a partial (sub-region) measurement or not
-
+    
 
         raise NotImplementedError
 
@@ -69,7 +70,6 @@ class GlacierCollection:
     
     def read_mass_balance_data(self, file_path):
 
-
         # Read the dataset of the year and mass_balance
         file = open(file_path)
         csv_reader = csv.reader(file)
@@ -79,11 +79,13 @@ class GlacierCollection:
         header = next(csv_reader) 
 
         for row in csv_reader:
+            # row = [year, mass_balance]
             year = row[3]
             mass_balance = row[11]
 
             # store the data in mass_balance_measurement
-            Glacier.mass_balance_measurement.append(year, mass_balance)
+            for item in self.glacier_dataset:
+                item.mass_balance_measurement.append([year, mass_balance])
 
         file.close()
 
@@ -117,6 +119,7 @@ class GlacierCollection:
 
         raise NotImplementedError
 
+
 # Import the csv file, sheet A
 file_path_A = Path("./sheet-A.csv")
 collection = GlacierCollection(file_path_A)
@@ -130,5 +133,6 @@ print(collection.glacier_dataset[100].code)
 # Import the csv file, sheet EE
 file_path_EE = Path("./sheet-EE.csv")
 
-
-
+collection.read_mass_balance_data(file_path_EE)
+# To test the output EE
+print(collection.glacier_dataset[100].mass_balance_measurement[0])
