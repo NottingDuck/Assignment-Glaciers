@@ -10,8 +10,6 @@ class Glacier:
 
     def __init__(self, glacier_id, name, unit, lat, lon, code):
 
-        self.name = name
-
         self.glacier_id = glacier_id
 
         self.name = name
@@ -24,13 +22,12 @@ class Glacier:
         self.lat = lat
 
         self.lon = lon
-        
 
         self.code = code
 
-
-    def add_mass_balance_measurement(self, year, mass_balance):
-
+    def add_mass_balance_measurement(self, year, mass_balance, boolean_value):
+        # a boolean value indicating whether this is a partial (sub-region) measurement or not
+        
         raise NotImplementedError
 
 
@@ -45,25 +42,33 @@ class GlacierCollection:
 
     def __init__(self, file_path):
         
+        # Read the dataset of the glacier_id, name, unit, lat, lon, code
         file = open(file_path)
         csv_reader = csv.reader(file)
 
+        # the first line is the header
         header = []
-        header = next(csv_reader)
+        header = next(csv_reader) 
 
         self.my_glacier = []
 
         for row in csv_reader:
-            
-            # glacier_id, name, unit, lat, lon, code
-            self.my_glacier.append(Glacier(row[2], row[1], row[0], row[5], row[6], int(row[7]+row[8]+row[9])))
+            # row = [glacier_id, name, unit, lat, lon, code]
+            glacier_id = row[2]
+            name = row[1]
+            unit = row[0]
+            lat = float(row[5])
+            lon = float(row[6])
+            code = int(row[7]+row[8]+row[9])
+
+            # Store the data in my_glacier
+            self.my_glacier.append(Glacier(glacier_id, name, unit, lat, lon, code))
 
         file.close()
     
     def read_mass_balance_data(self, file_path):
-
+        
         raise NotImplementedError
-
 
     def find_nearest(self, lat, lon, n):
 
@@ -96,8 +101,11 @@ class GlacierCollection:
         raise NotImplementedError
 
 # Import the csv file, sheet A
-file_path = Path("./sheet-A.csv")
-collection = GlacierCollection(file_path)
+file_path_A = Path("./sheet-A.csv")
+collection = GlacierCollection(file_path_A)
 
 # To test the output 
-print(collection.my_glacier[50].code)
+for item in collection.my_glacier:
+    print(item.name)
+    
+print(collection.my_glacier[100].code)
