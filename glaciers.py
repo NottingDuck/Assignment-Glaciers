@@ -22,15 +22,19 @@ class Glacier:
 
         self.code = code
 
-        # To store the year, mass_balance, partial_value
-        self.mass_balance_measurement = []
+        # To store the year, mass_balance in dictionary
+        self.mass_balance_measurement = {}
 
-    def add_mass_balance_measurement(self, year, mass_balance, partial_value):
-        # a boolean value indicating whether this is a partial (sub-region) measurement or not
-        
-        # Check each year in this list 
+    def add_mass_balance_measurement(self, year, mass_balance, partial_state):
 
-        raise NotImplementedError
+        # Check if is partial and check the year in each glacier id whether if it is partial
+        if partial_state == False & mass_balance_measurement[year]['partial_state'] == 
+            mass_balance_measurement[year]["mass_balance"] += mass_balance
+        if partial_state == True 
+            mass_balance_measurement[year]["mass_balance"] = mass_balance
+
+        # Store the new mass balance, and the , with the coresponding new year
+        self.mass_balance_measurement[year] = {'mass_balance','partial_state'} 
 
 
     def plot_mass_balance(self, output_path):
@@ -52,7 +56,7 @@ class GlacierCollection:
         header = []
         header = next(csv_reader) 
 
-        self.glacier_dataset = []
+        self.glacier_dataset = {}
 
         for row in csv_reader:
             # row = [glacier_id, name, unit, lat, lon, code]
@@ -65,7 +69,7 @@ class GlacierCollection:
 
             # Store the data in my_glacier
             my_glacier = Glacier(glacier_id, name, unit, lat, lon, code)
-            self.glacier_dataset.append(my_glacier)
+            self.glacier_dataset[glacier_id] = my_glacier
 
         file.close()
     
@@ -80,16 +84,22 @@ class GlacierCollection:
         header = next(csv_reader) 
 
         for row in csv_reader:
-            # row = [glacier_id, year, mass_balance]
+            # row = [glacier_id, year,Lower Bound, Upper Bound, mass_balance]
             glacier_id_EE = row[2]
             year = row[3]
-            mass_balance = row[11]
+            Lower_Bound = int(row[4])
+            Upper_Bound = int(row[5])
 
-            # store the data in mass_balance_measurement
-            for item in self.glacier_dataset:
-                # To match each corresponding id
-                if item.glacier_id == glacier_id_EE:
-                    item.mass_balance_measurement.append([year,mass_balance])
+            mass_balance = float(row[11])
+            
+            # Check if it is partial measurement
+            if Lower_Bound == 9999 & Upper_Bound == 9999:
+                partial_state = False 
+            else:
+                partial_state = True
+
+            # Match the id with corresponding mass_balance_measurement
+            self.glacier_dataset[glacier_id_EE].add_mass_balance_measurement(year,mass_balance,partial_state)
 
         file.close()
 
@@ -139,4 +149,4 @@ file_path_EE = Path("./sheet-EE.csv")
 
 collection.read_mass_balance_data(file_path_EE)
 # To test the output EE
-print(collection.glacier_dataset[4].mass_balance_measurement)
+# print(collection.glacier_dataset[4].mass_balance_measurement)
